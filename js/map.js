@@ -7,6 +7,8 @@ const MapModule = (function() {
     let map = null;
     let userMarker = null;
     let userPosition = null;
+    let selectedPosition = null;  // Position selected by clicking on map
+    let selectionMarker = null;   // Marker for selected position
     let watchId = null;
     let storyMarkers = [];
     
@@ -33,6 +35,9 @@ const MapModule = (function() {
             map.zoomControl.setPosition('bottomleft');
         }
         
+        // Click on map to select location for story
+        map.on('click', onMapClick);
+        
         // Start watching user location
         startLocationWatch();
         
@@ -40,6 +45,57 @@ const MapModule = (function() {
         map.on('moveend', onMapMove);
         
         return map;
+    }
+    
+    /**
+     * Handle click on map - select location for new story
+     */
+    function onMapClick(e) {
+        const { lat, lng } = e.latlng;
+        
+        // Set selected position
+        selectedPosition = { lat, lng };
+        
+        // Remove previous selection marker
+        if (selectionMarker) {
+            map.removeLayer(selectionMarker);
+        }
+        
+        // Add selection marker
+        selectionMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'selection-marker',
+                html: `<div style="
+                    width: 50px;
+                    height: 50px;
+                    background: linear-gradient(135deg, #FFB347, #FF9F1C);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    box-shadow: 0 4px 15px rgba(255, 159, 28, 0.5);
+                    border: 3px solid white;
+                    animation: pulse-selection 1.5s infinite;
+                ">📍</div>`,
+                iconSize: [50, 50],
+                iconAnchor: [25, 25]
+            })
+        }).addTo(map);
+        
+        // Show prompt to add story
+        UI.showLocationSelected(lat, lng);
+    }
+    
+    /**
+     * Clear selected position
+     */
+    function clearSelection() {
+        selectedPosition = null;
+        if (selectionMarker) {
+            map.removeLayer(selectionMarker);
+            selectionMarker = null;
+        }
     }
     
     /**
@@ -190,11 +246,17 @@ const MapModule = (function() {
             ? new Date(story.created_at).toLocaleDateString('bg-BG')
             : '';
         
+        // Google Street View URL
+        const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${story.lat},${story.lng}`;
+        
         return `
             <div class="story-popup">
                 <span class="emotion-tag">${emoji} ${story.emotion || 'story'}</span>
                 <p class="story-text">${escapeHtml(story.text)}</p>
                 ${date ? `<span class="story-date">${date}</span>` : ''}
+                <a href="${streetViewUrl}" target="_blank" class="street-view-btn">
+                    📍 View Location
+                </a>
             </div>
         `;
     }
@@ -224,10 +286,18 @@ const MapModule = (function() {
     }
     
     /**
-     * Get current user position
+     * Get current user position or selected position
      */
     function getUserPosition() {
-        return userPosition;
+        // Prefer selected position if available
+        return selectedPosition || userPosition;
+    }
+    
+    /**
+     * Get selected position (from map click)
+     */
+    function getSelectedPosition() {
+        return selectedPosition;
     }
     
     /**
@@ -244,6 +314,8 @@ const MapModule = (function() {
         clearMarkers,
         hasMarker,
         getUserPosition,
+        getSelectedPosition,
+        clearSelection,
         getMap
     };
 })();

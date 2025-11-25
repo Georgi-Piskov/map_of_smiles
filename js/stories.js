@@ -5,6 +5,8 @@
 
 const StoriesModule = (function() {
     let loadedStoryIds = new Set();
+    let allLoadedStories = [];  // Store all loaded stories for filtering
+    let currentFilter = 'all';
     let isLoading = false;
     
     /**
@@ -35,7 +37,7 @@ const StoriesModule = (function() {
             // Build Supabase REST API URL with filters
             const url = new URL(`${CONFIG.supabase.url}/rest/v1/${CONFIG.supabase.tableName}`);
             url.searchParams.append('select', '*');
-            url.searchParams.append('status', 'eq.approved');
+            url.searchParams.append('or', '(status.eq.approved,status.eq.pass)');
             url.searchParams.append('lat', `gte.${minLat}`);
             url.searchParams.append('lat', `lte.${maxLat}`);
             url.searchParams.append('lng', `gte.${minLng}`);
@@ -56,13 +58,16 @@ const StoriesModule = (function() {
             
             const stories = await response.json();
             
-            // Add markers for new stories
+            // Store all stories for filtering
             stories.forEach(story => {
-                if (!loadedStoryIds.has(story.id) && !MapModule.hasMarker(story.id)) {
-                    MapModule.addStoryMarker(story);
+                if (!loadedStoryIds.has(story.id)) {
+                    allLoadedStories.push(story);
                     loadedStoryIds.add(story.id);
                 }
             });
+            
+            // Add markers based on current filter
+            displayFilteredStories();
             
             console.log(`Loaded ${stories.length} stories`);
             
@@ -138,13 +143,38 @@ const StoriesModule = (function() {
      */
     function clearCache() {
         loadedStoryIds.clear();
+        allLoadedStories = [];
         MapModule.clearMarkers();
+    }
+    
+    /**
+     * Filter stories by emotion
+     */
+    function filterByEmotion(emotion) {
+        currentFilter = emotion;
+        displayFilteredStories();
+    }
+    
+    /**
+     * Display stories based on current filter
+     */
+    function displayFilteredStories() {
+        // Clear existing markers
+        MapModule.clearMarkers();
+        
+        // Filter and display
+        allLoadedStories.forEach(story => {
+            if (currentFilter === 'all' || story.emotion === currentFilter) {
+                MapModule.addStoryMarker(story);
+            }
+        });
     }
     
     // Public API
     return {
         loadNearby,
         submit,
-        clearCache
+        clearCache,
+        filterByEmotion
     };
 })();

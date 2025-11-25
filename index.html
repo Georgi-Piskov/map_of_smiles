@@ -24,6 +24,18 @@
     <!-- Map Container -->
     <div id="map"></div>
     
+    <!-- Emotion Filter -->
+    <div id="emotion-filter" class="emotion-filter">
+        <button class="filter-btn active" data-filter="all">🌟 All</button>
+        <button class="filter-btn" data-filter="happy">😊</button>
+        <button class="filter-btn" data-filter="love">❤️</button>
+        <button class="filter-btn" data-filter="funny">😂</button>
+        <button class="filter-btn" data-filter="grateful">🙏</button>
+        <button class="filter-btn" data-filter="inspired">✨</button>
+        <button class="filter-btn" data-filter="peaceful">😌</button>
+        <button class="filter-btn" data-filter="nostalgic">🥹</button>
+    </div>
+    
     <!-- Add Story Button -->
     <button id="add-story-btn" class="floating-btn" aria-label="Add your story">
         <span>+</span>
@@ -63,6 +75,7 @@
                         <button type="button" class="emotion-btn" data-emotion="grateful">🙏 Grateful</button>
                         <button type="button" class="emotion-btn" data-emotion="inspired">✨ Inspired</button>
                         <button type="button" class="emotion-btn" data-emotion="peaceful">😌 Peaceful</button>
+                        <button type="button" class="emotion-btn" data-emotion="nostalgic">🥹 Nostalgic</button>
                     </div>
                     <input type="hidden" id="selected-emotion" name="emotion" value="happy">
                 </div>

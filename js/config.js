@@ -6,14 +6,14 @@
 const CONFIG = {
     // Supabase Configuration
     supabase: {
-        url: 'YOUR_SUPABASE_URL',           // e.g., https://xxxxx.supabase.co
-        anonKey: 'YOUR_SUPABASE_ANON_KEY',  // Public anon key (safe to expose)
+        url: 'https://iwgjhbtsjkhomvvlysln.supabase.co',
+        anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3Z2poYnRzamtob212dmx5c2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjY0MjgsImV4cCI6MjA3NTQ0MjQyOH0.PJxCqGConjxbwNPgIBBHegey9CDt9DrI1qLD95ALTW0',
         tableName: 'stories'
     },
     
     // n8n Webhook for story submission
     n8n: {
-        submitWebhook: 'YOUR_N8N_WEBHOOK_URL'  // e.g., https://your-n8n.com/webhook/submit-story
+        submitWebhook: 'https://n8n.simeontsvetanovn8nworkflows.site/webhook/3899e9f9-a15a-40f2-894c-6d1324a26398'
     },
     
     // Map Settings
@@ -31,7 +31,7 @@ const CONFIG = {
         maxLength: 500,
         defaultRadius: 5000,  // meters
         loadRadius: 10000,    // meters - area to load stories from
-        emotions: ['happy', 'love', 'funny', 'grateful', 'inspired', 'peaceful']
+        emotions: ['happy', 'love', 'funny', 'grateful', 'inspired', 'peaceful', 'nostalgic']
     },
     
     // Emotion Icons
@@ -42,6 +42,7 @@ const CONFIG = {
         grateful: '🙏',
         inspired: '✨',
         peaceful: '😌',
+        nostalgic: '🥹',
         default: '💫'
     }
 };

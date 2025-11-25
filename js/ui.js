@@ -6,6 +6,7 @@
 const UI = (function() {
     // DOM Elements
     let elements = {};
+    let locationSelectedToast = null;
     
     /**
      * Initialize UI elements and event listeners
@@ -27,7 +28,8 @@ const UI = (function() {
             locationStatus: document.getElementById('location-status'),
             statusText: document.getElementById('status-text'),
             toast: document.getElementById('toast'),
-            toastMessage: document.getElementById('toast-message')
+            toastMessage: document.getElementById('toast-message'),
+            filterBtns: document.querySelectorAll('.filter-btn')
         };
         
         // Bind events
@@ -69,6 +71,26 @@ const UI = (function() {
                 closeModal();
             }
         });
+        
+        // Filter buttons
+        elements.filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => handleFilterClick(btn));
+        });
+    }
+    
+    /**
+     * Handle filter button click
+     */
+    function handleFilterClick(btn) {
+        // Update active state
+        elements.filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Get filter value
+        const filter = btn.dataset.filter;
+        
+        // Apply filter
+        StoriesModule.filterByEmotion(filter);
     }
     
     /**
@@ -78,9 +100,12 @@ const UI = (function() {
         const position = MapModule.getUserPosition();
         
         if (!position) {
-            showToast('Please enable location first', 'error');
+            showToast('Please select a location on the map or enable GPS', 'error');
             return;
         }
+        
+        // Hide location selected prompt if visible
+        hideLocationSelectedPrompt();
         
         elements.modal.classList.remove('hidden');
         elements.textarea.focus();
@@ -94,6 +119,9 @@ const UI = (function() {
         elements.modal.classList.add('hidden');
         document.body.style.overflow = '';
         resetForm();
+        
+        // Clear map selection when closing
+        MapModule.clearSelection();
     }
     
     /**
@@ -216,6 +244,51 @@ const UI = (function() {
         }, 3000);
     }
     
+    /**
+     * Show location selected prompt
+     */
+    function showLocationSelected(lat, lng) {
+        // Remove existing prompt if any
+        hideLocationSelectedPrompt();
+        
+        // Create prompt element
+        locationSelectedToast = document.createElement('div');
+        locationSelectedToast.className = 'location-selected-prompt';
+        locationSelectedToast.innerHTML = `
+            <div class="prompt-content">
+                <span class="prompt-text">📍 Location selected!</span>
+                <button class="prompt-btn add-story-btn-prompt">Add Story Here</button>
+                <button class="prompt-btn cancel-btn-prompt">Cancel</button>
+            </div>
+        `;
+        
+        document.body.appendChild(locationSelectedToast);
+        
+        // Bind events
+        locationSelectedToast.querySelector('.add-story-btn-prompt').addEventListener('click', () => {
+            hideLocationSelectedPrompt();
+            openModal();
+        });
+        
+        locationSelectedToast.querySelector('.cancel-btn-prompt').addEventListener('click', () => {
+            MapModule.clearSelection();
+            hideLocationSelectedPrompt();
+        });
+        
+        // Show with animation
+        setTimeout(() => locationSelectedToast.classList.add('show'), 10);
+    }
+    
+    /**
+     * Hide location selected prompt
+     */
+    function hideLocationSelectedPrompt() {
+        if (locationSelectedToast) {
+            locationSelectedToast.remove();
+            locationSelectedToast = null;
+        }
+    }
+    
     // Public API
     return {
         init,
@@ -223,6 +296,8 @@ const UI = (function() {
         closeModal,
         showStatus,
         hideStatus,
-        showToast
+        showToast,
+        showLocationSelected,
+        hideLocationSelectedPrompt
     };
 })();

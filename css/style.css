@@ -62,6 +62,51 @@ body {
     justify-content: center;
 }
 
+/* ===== Emotion Filter ===== */
+.emotion-filter {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    padding: 8px 12px;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    max-width: 95vw;
+    overflow-x: auto;
+}
+
+.filter-btn {
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background: #F5F5F5;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    background: #EFEFEF;
+    transform: scale(1.05);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-dark);
+}
+
+.filter-btn[data-filter="all"] {
+    font-size: 14px;
+    padding: 8px 14px;
+}
+
 .floating-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 12px 35px rgba(255, 159, 28, 0.4);
@@ -356,6 +401,25 @@ textarea::placeholder {
     color: var(--text-light);
 }
 
+.story-popup .street-view-btn {
+    display: block;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #4285F4, #34A853);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.story-popup .street-view-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+}
+
 /* Custom marker styles */
 .custom-marker {
     background: var(--white);
@@ -370,6 +434,80 @@ textarea::placeholder {
 /* ===== Utility Classes ===== */
 .hidden {
     display: none !important;
+}
+
+/* ===== Location Selected Prompt ===== */
+.location-selected-prompt {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--white);
+    padding: 15px 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1500;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.location-selected-prompt.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.prompt-text {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.prompt-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-story-btn-prompt {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+}
+
+.add-story-btn-prompt:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 159, 28, 0.4);
+}
+
+.cancel-btn-prompt {
+    background: #E0E0E0;
+    color: var(--text-color);
+}
+
+.cancel-btn-prompt:hover {
+    background: #D0D0D0;
+}
+
+/* Selection marker animation */
+@keyframes pulse-selection {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(255, 159, 28, 0.5);
+    }
+    50% { 
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(255, 159, 28, 0.7);
+    }
 }
 
 /* ===== Responsive ===== */
