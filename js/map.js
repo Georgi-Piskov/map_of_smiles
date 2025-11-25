@@ -298,12 +298,13 @@ const MapModule = (function() {
         
         // Don't use bindPopup - create popup manually on click
         marker.on('click', function(e) {
-            console.log('Marker clicked!');
+            // Close any existing popup first
+            map.closePopup();
             
             // Create and open popup
             const popup = L.popup({
                 closeOnClick: false,
-                autoClose: false,
+                autoClose: true,
                 closeButton: true,
                 maxWidth: 280,
                 minWidth: 200
