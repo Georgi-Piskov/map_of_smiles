@@ -11,8 +11,8 @@ const MapModule = (function() {
     let selectionMarker = null;   // Marker for selected position
     let watchId = null;
     let storyMarkers = [];
-    let markerClusterGroup = null;  // Cluster group for story markers
-    let currentPopup = null;        // Currently open popup
+    let markersLayer = null;  // Simple layer group instead of cluster
+    let currentPopup = null;  // Currently open popup
     
     /**
      * Initialize the Leaflet map
@@ -26,7 +26,8 @@ const MapModule = (function() {
             maxZoom: CONFIG.map.maxZoom,
             zoomControl: true,
             closePopupOnClick: false,
-            tap: false  // Disable tap handler that causes issues on mobile
+            tap: false,
+            tapTolerance: 30
         });
         
         // Add tile layer (OpenStreetMap)
@@ -39,15 +40,8 @@ const MapModule = (function() {
             map.zoomControl.setPosition('bottomleft');
         }
         
-        // Initialize marker cluster group
-        markerClusterGroup = L.markerClusterGroup({
-            maxClusterRadius: 50,
-            spiderfyOnMaxZoom: true,
-            showCoverageOnHover: false,
-            zoomToBoundsOnClick: true,
-            disableClusteringAtZoom: 18
-        });
-        map.addLayer(markerClusterGroup);
+        // Use simple layer group instead of cluster for now
+        markersLayer = L.layerGroup().addTo(map);
         
         // Click on map to select location for story
         map.on('click', function(e) {
@@ -58,12 +52,11 @@ const MapModule = (function() {
                 return;
             }
             
-            // Check if clicked on a marker or cluster
+            // Check if clicked on a marker or popup
             if (e.originalEvent && e.originalEvent.target) {
                 const target = e.originalEvent.target;
                 if (target.closest('.story-marker-pin') || 
                     target.closest('.leaflet-popup') || 
-                    target.closest('.marker-cluster') ||
                     target.closest('.leaflet-marker-icon')) {
                     return;
                 }
@@ -271,45 +264,25 @@ const MapModule = (function() {
     function addStoryMarker(story) {
         const icon = createStoryIcon(story.emotion);
         
-        const marker = L.marker([story.lat, story.lng], { icon });
+        const marker = L.marker([story.lat, story.lng], { 
+            icon: icon,
+            riseOnHover: true
+        });
         
-        // Create popup but don't bind it - we'll manage it manually
-        const popupContent = createPopupContent(story);
-        const popup = L.popup({
+        // Bind popup directly with all options
+        marker.bindPopup(createPopupContent(story), {
             closeOnClick: false,
             autoClose: false,
             closeButton: true,
             maxWidth: 280,
-            minWidth: 200
-        }).setContent(popupContent);
-        
-        // On marker click, open popup manually
-        marker.on('click', function(e) {
-            // Close any existing popup first
-            if (currentPopup) {
-                map.closePopup(currentPopup);
-            }
-            
-            // Open this popup
-            popup.setLatLng(marker.getLatLng());
-            popup.openOn(map);
-            currentPopup = popup;
-            
-            // Stop event propagation
-            L.DomEvent.stopPropagation(e);
+            minWidth: 200,
+            autoPan: true
         });
         
-        // Track when this popup closes
-        popup.on('remove', function() {
-            if (currentPopup === popup) {
-                currentPopup = null;
-            }
-        });
+        // Add to simple layer group
+        markersLayer.addLayer(marker);
         
-        // Add to cluster group
-        markerClusterGroup.addLayer(marker);
-        
-        storyMarkers.push({ id: story.id, marker, popup });
+        storyMarkers.push({ id: story.id, marker });
         
         return marker;
     }
@@ -369,8 +342,9 @@ const MapModule = (function() {
      * Clear all story markers
      */
     function clearMarkers() {
-        markerClusterGroup.clearLayers();
+        markersLayer.clearLayers();
         storyMarkers = [];
+        currentPopup = null;
     }
     
     /**
