@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Map of Smiles 😊</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FFB347">
+    
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Map of Smiles">
+</head>
+<body>
+    <!-- Map Container -->
+    <div id="map"></div>
+    
+    <!-- Add Story Button -->
+    <button id="add-story-btn" class="floating-btn" aria-label="Add your story">
+        <span>+</span>
+    </button>
+    
+    <!-- Location Status -->
+    <div id="location-status" class="location-status hidden">
+        <span id="status-text">Getting your location...</span>
+    </div>
+    
+    <!-- Story Modal -->
+    <div id="story-modal" class="modal hidden">
+        <div class="modal-content">
+            <button id="close-modal" class="close-btn" aria-label="Close">&times;</button>
+            <h2>Share Your Smile 😊</h2>
+            <p class="modal-subtitle">What positive moment happened here?</p>
+            
+            <form id="story-form">
+                <div class="form-group">
+                    <label for="story-text">Your Story</label>
+                    <textarea 
+                        id="story-text" 
+                        name="text" 
+                        maxlength="500" 
+                        placeholder="A stranger smiled at me today and it made my day..."
+                        required
+                    ></textarea>
+                    <span class="char-count"><span id="char-current">0</span>/500</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>How did it make you feel?</label>
+                    <div class="emotion-picker">
+                        <button type="button" class="emotion-btn" data-emotion="happy">😊 Happy</button>
+                        <button type="button" class="emotion-btn" data-emotion="love">❤️ Love</button>
+                        <button type="button" class="emotion-btn" data-emotion="funny">😂 Funny</button>
+                        <button type="button" class="emotion-btn" data-emotion="grateful">🙏 Grateful</button>
+                        <button type="button" class="emotion-btn" data-emotion="inspired">✨ Inspired</button>
+                        <button type="button" class="emotion-btn" data-emotion="peaceful">😌 Peaceful</button>
+                    </div>
+                    <input type="hidden" id="selected-emotion" name="emotion" value="happy">
+                </div>
+                
+                <button type="submit" id="submit-btn" class="submit-btn">
+                    <span class="btn-text">Share Story</span>
+                    <span class="btn-loading hidden">Sending...</span>
+                </button>
+            </form>
+            
+            <p class="privacy-note">🔒 Your story is anonymous. No personal data is stored.</p>
+        </div>
+    </div>
+    
+    <!-- Success Toast -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-message">Story shared!</span>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/stories.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
