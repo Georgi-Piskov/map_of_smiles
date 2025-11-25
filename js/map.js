@@ -12,18 +12,20 @@ const MapModule = (function() {
     let watchId = null;
     let storyMarkers = [];
     let markerClusterGroup = null;  // Cluster group for story markers
+    let popupJustOpened = false;    // Flag to prevent map click from interfering
     
     /**
      * Initialize the Leaflet map
      */
     function init() {
-        // Create map
+        // Create map with closePopupOnClick disabled
         map = L.map('map', {
             center: CONFIG.map.defaultCenter,
             zoom: CONFIG.map.defaultZoom,
             minZoom: CONFIG.map.minZoom,
             maxZoom: CONFIG.map.maxZoom,
-            zoomControl: true
+            zoomControl: true,
+            closePopupOnClick: false  // Don't close popup when clicking map
         });
         
         // Add tile layer (OpenStreetMap)
@@ -46,16 +48,28 @@ const MapModule = (function() {
         });
         map.addLayer(markerClusterGroup);
         
-        // Click on map to select location for story (with delay to allow popup to open first)
-        map.on('click', function(e) {
-            // Longer delay to let marker click events and popup open first
+        // Track when popup opens to prevent interference
+        map.on('popupopen', function() {
+            popupJustOpened = true;
+            // Reset flag after a delay
             setTimeout(() => {
-                // Don't trigger if a popup is open or was recently opened
-                if (document.querySelector('.leaflet-popup') || map._popup) {
-                    return;
-                }
-                onMapClick(e);
-            }, 300);
+                popupJustOpened = false;
+            }, 500);
+        });
+        
+        // Click on map to select location for story
+        map.on('click', function(e) {
+            // Don't do anything if popup just opened or is open
+            if (popupJustOpened) {
+                return;
+            }
+            
+            // Check if there's an open popup - don't interfere
+            if (document.querySelector('.leaflet-popup')) {
+                return;
+            }
+            
+            onMapClick(e);
         });
         
         // Start watching user location
