@@ -48,14 +48,14 @@ const MapModule = (function() {
         
         // Click on map to select location for story (with delay to allow popup to open first)
         map.on('click', function(e) {
-            // Small delay to let marker click events fire first
+            // Longer delay to let marker click events and popup open first
             setTimeout(() => {
-                // Don't trigger if a popup is open
-                if (document.querySelector('.leaflet-popup')) {
+                // Don't trigger if a popup is open or was recently opened
+                if (document.querySelector('.leaflet-popup') || map._popup) {
                     return;
                 }
                 onMapClick(e);
-            }, 100);
+            }, 300);
         });
         
         // Start watching user location
