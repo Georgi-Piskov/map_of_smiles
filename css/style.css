@@ -1013,6 +1013,21 @@ body:has(.install-banner:not(.hidden)) .floating-btn {
     }
 }
 
+/* Mobile: Move home and menu buttons below filter bar */
+@media (max-width: 767px) {
+    .home-btn {
+        top: 145px;
+    }
+    
+    .menu-btn {
+        top: 145px;
+    }
+    
+    .leaflet-top.leaflet-left {
+        top: 200px;
+    }
+}
+
 @media (min-width: 768px) {
     .modal {
         align-items: center;
