@@ -893,7 +893,126 @@ textarea::placeholder {
     }
 }
 
+/* ===== Install App Banner ===== */
+.install-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 16px 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1002;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.install-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.install-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.install-text strong {
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.install-text span {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.install-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.install-dismiss {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.install-dismiss:hover {
+    background: var(--background);
+}
+
+.install-btn {
+    padding: 10px 20px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 159, 28, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.install-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 159, 28, 0.4);
+}
+
+/* Adjust floating button when banner is visible */
+.install-banner:not(.hidden) ~ .floating-btn,
+body:has(.install-banner:not(.hidden)) .floating-btn {
+    bottom: 100px;
+}
+
 /* ===== Responsive ===== */
+@media (max-width: 480px) {
+    .install-banner {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+    }
+    
+    .install-content {
+        margin-bottom: 12px;
+    }
+    
+    .install-actions {
+        justify-content: flex-end;
+    }
+}
+
 @media (min-width: 768px) {
     .modal {
         align-items: center;
