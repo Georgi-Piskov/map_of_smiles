@@ -12,7 +12,7 @@ const MapModule = (function() {
     let watchId = null;
     let storyMarkers = [];
     let markersLayer = null;  // Simple layer group instead of cluster
-    let currentPopup = null;  // Currently open popup
+    let popupOpen = false;    // Track if any popup is open
     
     /**
      * Initialize the Leaflet map
@@ -43,12 +43,22 @@ const MapModule = (function() {
         // Use simple layer group instead of cluster for now
         markersLayer = L.layerGroup().addTo(map);
         
-        // Click on map to select location for story
+        // Track popup open/close
+        map.on('popupopen', function() {
+            popupOpen = true;
+        });
+        
+        map.on('popupclose', function() {
+            // Delay setting to false to prevent race condition
+            setTimeout(() => {
+                popupOpen = false;
+            }, 300);
+        });
+        
+        // Click on map to select location for story - but NOT if popup is open
         map.on('click', function(e) {
-            // If there's an open popup, close it and don't do anything else
-            if (currentPopup) {
-                map.closePopup(currentPopup);
-                currentPopup = null;
+            // If popup is open or was just open, ignore completely
+            if (popupOpen || document.querySelector('.leaflet-popup')) {
                 return;
             }
             
@@ -57,7 +67,8 @@ const MapModule = (function() {
                 const target = e.originalEvent.target;
                 if (target.closest('.story-marker-pin') || 
                     target.closest('.leaflet-popup') || 
-                    target.closest('.leaflet-marker-icon')) {
+                    target.closest('.leaflet-marker-icon') ||
+                    target.closest('.marker-bubble')) {
                     return;
                 }
             }
@@ -68,8 +79,12 @@ const MapModule = (function() {
         // Start watching user location
         startLocationWatch();
         
-        // Load stories when map moves
-        map.on('moveend', onMapMove);
+        // Load stories when map moves - but not if popup is open
+        map.on('moveend', function() {
+            if (!popupOpen && !document.querySelector('.leaflet-popup')) {
+                onMapMove();
+            }
+        });
         
         return map;
     }
@@ -269,17 +284,30 @@ const MapModule = (function() {
             riseOnHover: true
         });
         
-        // Bind popup directly with all options
-        marker.bindPopup(createPopupContent(story), {
-            closeOnClick: false,
-            autoClose: false,
-            closeButton: true,
-            maxWidth: 280,
-            minWidth: 200,
-            autoPan: true
+        // Create popup content
+        const popupContent = createPopupContent(story);
+        
+        // Don't use bindPopup - create popup manually on click
+        marker.on('click', function(e) {
+            console.log('Marker clicked!');
+            
+            // Create and open popup
+            const popup = L.popup({
+                closeOnClick: false,
+                autoClose: false,
+                closeButton: true,
+                maxWidth: 280,
+                minWidth: 200
+            })
+            .setLatLng(marker.getLatLng())
+            .setContent(popupContent)
+            .openOn(map);
+            
+            // Prevent event from bubbling
+            L.DomEvent.stop(e);
         });
         
-        // Add to simple layer group
+        // Add to layer
         markersLayer.addLayer(marker);
         
         storyMarkers.push({ id: story.id, marker });
@@ -344,7 +372,6 @@ const MapModule = (function() {
     function clearMarkers() {
         markersLayer.clearLayers();
         storyMarkers = [];
-        currentPopup = null;
     }
     
     /**
