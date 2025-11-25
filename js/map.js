@@ -11,7 +11,7 @@ const MapModule = (function() {
     let selectionMarker = null;   // Marker for selected position
     let watchId = null;
     let storyMarkers = [];
-    let markersLayer = null;  // Simple layer group instead of cluster
+    let markerClusterGroup = null;  // Cluster group for story markers
     let popupOpen = false;    // Track if any popup is open
     
     /**
@@ -40,8 +40,16 @@ const MapModule = (function() {
             map.zoomControl.setPosition('bottomleft');
         }
         
-        // Use simple layer group instead of cluster for now
-        markersLayer = L.layerGroup().addTo(map);
+        // Initialize marker cluster group
+        markerClusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 18,
+            spiderfyDistanceMultiplier: 1.5
+        });
+        map.addLayer(markerClusterGroup);
         
         // Track popup open/close
         map.on('popupopen', function() {
@@ -62,13 +70,14 @@ const MapModule = (function() {
                 return;
             }
             
-            // Check if clicked on a marker or popup
+            // Check if clicked on a marker, popup or cluster
             if (e.originalEvent && e.originalEvent.target) {
                 const target = e.originalEvent.target;
                 if (target.closest('.story-marker-pin') || 
                     target.closest('.leaflet-popup') || 
                     target.closest('.leaflet-marker-icon') ||
-                    target.closest('.marker-bubble')) {
+                    target.closest('.marker-bubble') ||
+                    target.closest('.marker-cluster')) {
                     return;
                 }
             }
@@ -307,8 +316,8 @@ const MapModule = (function() {
             L.DomEvent.stop(e);
         });
         
-        // Add to layer
-        markersLayer.addLayer(marker);
+        // Add to cluster group
+        markerClusterGroup.addLayer(marker);
         
         storyMarkers.push({ id: story.id, marker });
         
@@ -370,7 +379,7 @@ const MapModule = (function() {
      * Clear all story markers
      */
     function clearMarkers() {
-        markersLayer.clearLayers();
+        markerClusterGroup.clearLayers();
         storyMarkers = [];
     }
     
