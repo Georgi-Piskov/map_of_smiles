@@ -275,9 +275,23 @@ const MapModule = (function() {
             .bindPopup(createPopupContent(story), {
                 closeOnClick: false,
                 autoClose: false,
+                closeButton: true,
                 maxWidth: 280,
                 minWidth: 200
             });
+        
+        // On marker click, set flag to prevent map click interference
+        marker.on('click', function(e) {
+            popupJustOpened = true;
+            L.DomEvent.stopPropagation(e);
+            setTimeout(() => { popupJustOpened = false; }, 1000);
+        });
+        
+        // Also handle touch events for mobile
+        marker.on('touchend', function(e) {
+            popupJustOpened = true;
+            setTimeout(() => { popupJustOpened = false; }, 1000);
+        });
         
         // Add to cluster group instead of directly to map
         markerClusterGroup.addLayer(marker);

@@ -722,6 +722,30 @@ textarea::placeholder {
     line-height: 1.5;
 }
 
+/* Prevent popup from closing on mobile touch */
+.leaflet-popup {
+    pointer-events: auto;
+}
+
+.leaflet-popup-pane {
+    pointer-events: auto;
+}
+
+/* Make close button bigger and easier to tap on mobile */
+.leaflet-popup-close-button {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 24px !important;
+    line-height: 30px !important;
+    padding: 0 !important;
+    text-align: center;
+    color: var(--text-light) !important;
+}
+
+.leaflet-popup-close-button:hover {
+    color: var(--text-color) !important;
+}
+
 .story-popup {
     max-width: 250px;
 }
