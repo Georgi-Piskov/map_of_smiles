@@ -214,11 +214,33 @@ const MapModule = (function() {
         
         UI.showStatus(message, 'error');
         
+        // Show WebView banner if location failed (likely in-app browser)
+        showOpenInBrowserBanner();
+        
         // Still load stories for default location
         StoriesModule.loadNearby(
             CONFIG.map.defaultCenter[0],
             CONFIG.map.defaultCenter[1]
         );
+    }
+    
+    /**
+     * Show banner to open in real browser when location fails
+     */
+    function showOpenInBrowserBanner() {
+        const banner = document.getElementById('webview-banner');
+        if (!banner) return;
+        
+        // Check if dismissed recently
+        const dismissedTime = localStorage.getItem('webviewDismissed');
+        if (dismissedTime) {
+            const hoursSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60);
+            if (hoursSinceDismissed < 1) {
+                return;
+            }
+        }
+        
+        banner.classList.remove('hidden');
     }
     
     /**

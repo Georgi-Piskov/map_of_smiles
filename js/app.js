@@ -15,7 +15,10 @@
     function init() {
         console.log('🗺️ Map of Smiles initializing...');
         
-        // Check for WebView first
+        // Setup WebView banner buttons first (before map init may trigger it)
+        setupWebViewBanner();
+        
+        // Check for WebView 
         checkWebView();
         
         // Initialize UI first
@@ -31,6 +34,48 @@
         setupInstallPrompt();
         
         console.log('✅ Map of Smiles ready!');
+    }
+    
+    /**
+     * Setup WebView banner button handlers
+     */
+    function setupWebViewBanner() {
+        const banner = document.getElementById('webview-banner');
+        const openBtn = document.getElementById('webview-open');
+        const dismissBtn = document.getElementById('webview-dismiss');
+        
+        if (!banner || !openBtn || !dismissBtn) return;
+        
+        // Open in browser button
+        openBtn.addEventListener('click', () => {
+            const url = window.location.href;
+            
+            // Try different methods to open in external browser
+            if (/android/i.test(navigator.userAgent)) {
+                // Android: try Chrome intent
+                window.location.href = 'intent://' + url.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, 500);
+            } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // iOS: copy to clipboard
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Линкът е копиран! Отвори Safari и го постави там.');
+                    });
+                } else {
+                    prompt('Копирай този линк и го отвори в Safari:', url);
+                }
+            } else {
+                window.open(url, '_blank');
+            }
+        });
+        
+        // Dismiss button
+        dismissBtn.addEventListener('click', () => {
+            banner.classList.add('hidden');
+            localStorage.setItem('webviewDismissed', Date.now().toString());
+        });
     }
     
     /**
@@ -86,9 +131,6 @@
      */
     function showWebViewBanner() {
         const banner = document.getElementById('webview-banner');
-        const openBtn = document.getElementById('webview-open');
-        const dismissBtn = document.getElementById('webview-dismiss');
-        
         if (!banner) return;
         
         // Check if user dismissed recently (1 hour)
@@ -101,43 +143,6 @@
         }
         
         banner.classList.remove('hidden');
-        
-        // Open in browser button
-        openBtn.addEventListener('click', () => {
-            const url = window.location.href;
-            
-            // Try different methods to open in external browser
-            // Method 1: intent for Android
-            if (/android/i.test(navigator.userAgent)) {
-                window.location.href = 'intent://' + url.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-                // Fallback after short delay
-                setTimeout(() => {
-                    window.open(url, '_system');
-                }, 500);
-            } 
-            // Method 2: For iOS, just copy URL and show instructions
-            else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // Try to copy URL to clipboard
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(url).then(() => {
-                        alert('Линкът е копиран! Отвори Safari и го постави там.');
-                    });
-                } else {
-                    // Fallback: show URL
-                    prompt('Копирай този линк и го отвори в Safari:', url);
-                }
-            }
-            // Method 3: Generic
-            else {
-                window.open(url, '_blank');
-            }
-        });
-        
-        // Dismiss button
-        dismissBtn.addEventListener('click', () => {
-            banner.classList.add('hidden');
-            localStorage.setItem('webviewDismissed', Date.now().toString());
-        });
     }
     
     /**
