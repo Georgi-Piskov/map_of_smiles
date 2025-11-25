@@ -11,6 +11,7 @@ const MapModule = (function() {
     let selectionMarker = null;   // Marker for selected position
     let watchId = null;
     let storyMarkers = [];
+    let markerClusterGroup = null;  // Cluster group for story markers
     
     /**
      * Initialize the Leaflet map
@@ -34,6 +35,16 @@ const MapModule = (function() {
         if (window.innerWidth < 768) {
             map.zoomControl.setPosition('bottomleft');
         }
+        
+        // Initialize marker cluster group
+        markerClusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 50,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 18
+        });
+        map.addLayer(markerClusterGroup);
         
         // Click on map to select location for story
         map.on('click', onMapClick);
@@ -204,8 +215,10 @@ const MapModule = (function() {
         const icon = createStoryIcon(story.emotion);
         
         const marker = L.marker([story.lat, story.lng], { icon })
-            .addTo(map)
             .bindPopup(createPopupContent(story));
+        
+        // Add to cluster group instead of directly to map
+        markerClusterGroup.addLayer(marker);
         
         storyMarkers.push({ id: story.id, marker });
         
@@ -213,27 +226,20 @@ const MapModule = (function() {
     }
     
     /**
-     * Create custom icon for story marker
+     * Create custom icon for story marker with pointer/tail
      */
     function createStoryIcon(emotion) {
         const emoji = CONFIG.emotionIcons[emotion] || CONFIG.emotionIcons.default;
         
         return L.divIcon({
-            className: 'custom-marker',
-            html: `<div style="
-                width: 40px;
-                height: 40px;
-                background: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 22px;
-                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            ">${emoji}</div>`,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-            popupAnchor: [0, -20]
+            className: 'custom-marker-wrapper',
+            html: `<div class="story-marker-pin">
+                <div class="marker-bubble">${emoji}</div>
+                <div class="marker-tail"></div>
+            </div>`,
+            iconSize: [44, 56],
+            iconAnchor: [22, 56],
+            popupAnchor: [0, -56]
         });
     }
     
@@ -274,7 +280,7 @@ const MapModule = (function() {
      * Clear all story markers
      */
     function clearMarkers() {
-        storyMarkers.forEach(({ marker }) => map.removeLayer(marker));
+        markerClusterGroup.clearLayers();
         storyMarkers = [];
     }
     
