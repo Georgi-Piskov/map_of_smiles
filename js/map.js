@@ -12,20 +12,21 @@ const MapModule = (function() {
     let watchId = null;
     let storyMarkers = [];
     let markerClusterGroup = null;  // Cluster group for story markers
-    let popupJustOpened = false;    // Flag to prevent map click from interfering
+    let currentPopup = null;        // Currently open popup
     
     /**
      * Initialize the Leaflet map
      */
     function init() {
-        // Create map with closePopupOnClick disabled
+        // Create map
         map = L.map('map', {
             center: CONFIG.map.defaultCenter,
             zoom: CONFIG.map.defaultZoom,
             minZoom: CONFIG.map.minZoom,
             maxZoom: CONFIG.map.maxZoom,
             zoomControl: true,
-            closePopupOnClick: false  // Don't close popup when clicking map
+            closePopupOnClick: false,
+            tap: false  // Disable tap handler that causes issues on mobile
         });
         
         // Add tile layer (OpenStreetMap)
@@ -48,25 +49,24 @@ const MapModule = (function() {
         });
         map.addLayer(markerClusterGroup);
         
-        // Track when popup opens to prevent interference
-        map.on('popupopen', function() {
-            popupJustOpened = true;
-            // Reset flag after a delay
-            setTimeout(() => {
-                popupJustOpened = false;
-            }, 500);
-        });
-        
         // Click on map to select location for story
         map.on('click', function(e) {
-            // Don't do anything if popup just opened or is open
-            if (popupJustOpened) {
+            // If there's an open popup, close it and don't do anything else
+            if (currentPopup) {
+                map.closePopup(currentPopup);
+                currentPopup = null;
                 return;
             }
             
-            // Check if there's an open popup - don't interfere
-            if (document.querySelector('.leaflet-popup')) {
-                return;
+            // Check if clicked on a marker or cluster
+            if (e.originalEvent && e.originalEvent.target) {
+                const target = e.originalEvent.target;
+                if (target.closest('.story-marker-pin') || 
+                    target.closest('.leaflet-popup') || 
+                    target.closest('.marker-cluster') ||
+                    target.closest('.leaflet-marker-icon')) {
+                    return;
+                }
             }
             
             onMapClick(e);
@@ -271,32 +271,45 @@ const MapModule = (function() {
     function addStoryMarker(story) {
         const icon = createStoryIcon(story.emotion);
         
-        const marker = L.marker([story.lat, story.lng], { icon })
-            .bindPopup(createPopupContent(story), {
-                closeOnClick: false,
-                autoClose: false,
-                closeButton: true,
-                maxWidth: 280,
-                minWidth: 200
-            });
+        const marker = L.marker([story.lat, story.lng], { icon });
         
-        // On marker click, set flag to prevent map click interference
+        // Create popup but don't bind it - we'll manage it manually
+        const popupContent = createPopupContent(story);
+        const popup = L.popup({
+            closeOnClick: false,
+            autoClose: false,
+            closeButton: true,
+            maxWidth: 280,
+            minWidth: 200
+        }).setContent(popupContent);
+        
+        // On marker click, open popup manually
         marker.on('click', function(e) {
-            popupJustOpened = true;
+            // Close any existing popup first
+            if (currentPopup) {
+                map.closePopup(currentPopup);
+            }
+            
+            // Open this popup
+            popup.setLatLng(marker.getLatLng());
+            popup.openOn(map);
+            currentPopup = popup;
+            
+            // Stop event propagation
             L.DomEvent.stopPropagation(e);
-            setTimeout(() => { popupJustOpened = false; }, 1000);
         });
         
-        // Also handle touch events for mobile
-        marker.on('touchend', function(e) {
-            popupJustOpened = true;
-            setTimeout(() => { popupJustOpened = false; }, 1000);
+        // Track when this popup closes
+        popup.on('remove', function() {
+            if (currentPopup === popup) {
+                currentPopup = null;
+            }
         });
         
-        // Add to cluster group instead of directly to map
+        // Add to cluster group
         markerClusterGroup.addLayer(marker);
         
-        storyMarkers.push({ id: story.id, marker });
+        storyMarkers.push({ id: story.id, marker, popup });
         
         return marker;
     }
