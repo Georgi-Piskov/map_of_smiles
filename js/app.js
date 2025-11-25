@@ -39,37 +39,42 @@
     function checkWebView() {
         const ua = navigator.userAgent || navigator.vendor || window.opera;
         
+        console.log('📱 User Agent:', ua);
+        
         // Detect various in-app browsers
         const isWebView = (
-            // Facebook
-            ua.indexOf('FBAN') > -1 || 
-            ua.indexOf('FBAV') > -1 ||
-            ua.indexOf('FB_IAB') > -1 ||
-            // Messenger
-            ua.indexOf('Messenger') > -1 ||
+            // Facebook & Messenger (most common)
+            /FBAN|FBAV|FB_IAB|FBIOS|FBSS|Messenger/i.test(ua) ||
             // Instagram
-            ua.indexOf('Instagram') > -1 ||
+            /Instagram/i.test(ua) ||
             // Twitter
-            ua.indexOf('Twitter') > -1 ||
+            /Twitter/i.test(ua) ||
             // TikTok
-            ua.indexOf('BytedanceWebview') > -1 ||
-            ua.indexOf('TikTok') > -1 ||
+            /BytedanceWebview|TikTok|musical_ly/i.test(ua) ||
             // Snapchat
-            ua.indexOf('Snapchat') > -1 ||
+            /Snapchat/i.test(ua) ||
             // LinkedIn
-            ua.indexOf('LinkedInApp') > -1 ||
-            // Line
-            ua.indexOf('Line/') > -1 ||
-            // Viber
-            ua.indexOf('Viber') > -1 ||
-            // Generic WebView detection
-            ua.indexOf('wv') > -1 ||
-            // iOS WebView
-            (ua.indexOf('iPhone') > -1 && ua.indexOf('Safari') === -1 && ua.indexOf('CriOS') === -1)
+            /LinkedInApp/i.test(ua) ||
+            // Line & Viber
+            /Line\/|Viber/i.test(ua) ||
+            // Telegram
+            /Telegram/i.test(ua) ||
+            // WhatsApp (rare, usually opens in browser)
+            /WhatsApp/i.test(ua) ||
+            // Pinterest
+            /Pinterest/i.test(ua) ||
+            // Generic WebView markers
+            /\bwv\b|WebView/i.test(ua) ||
+            // iOS UIWebView or WKWebView without Safari
+            (/iPhone|iPad|iPod/i.test(ua) && !/Safari/i.test(ua)) ||
+            // Android WebView
+            (/Android/i.test(ua) && /\bwv\b|Version\/[\d.]+.*Chrome\/[\d.]+ Mobile/i.test(ua))
         );
         
+        console.log('📱 Is WebView:', isWebView);
+        
         if (isWebView) {
-            console.log('⚠️ WebView detected:', ua);
+            console.log('⚠️ WebView detected!');
             showWebViewBanner();
         } else {
             console.log('✅ Running in regular browser');
