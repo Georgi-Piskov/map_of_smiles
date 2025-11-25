@@ -40,6 +40,275 @@ body {
     z-index: 1;
 }
 
+/* ===== Home Button ===== */
+.home-btn {
+    position: fixed;
+    top: 20px;
+    left: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--white);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    padding: 6px;
+}
+
+.home-btn:hover {
+    transform: scale(1.1);
+}
+
+.home-btn:active {
+    transform: scale(0.95);
+}
+
+.home-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+/* ===== Menu Button (Hamburger) ===== */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--white);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 12px;
+    transition: transform 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: scale(1.05);
+}
+
+.hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: var(--text-color);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* ===== Side Menu ===== */
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100%;
+    background: var(--white);
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+    z-index: 3000;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.side-menu.hidden {
+    transform: translateX(100%);
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid #EEE;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: var(--white);
+}
+
+.menu-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.menu-title {
+    flex: 1;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.close-menu-btn {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+.close-menu-btn:hover {
+    opacity: 1;
+}
+
+.menu-nav {
+    flex: 1;
+    padding: 15px 0;
+    overflow-y: auto;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.menu-item:hover {
+    background: #F5F5F5;
+}
+
+.menu-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.menu-footer {
+    padding: 20px;
+    border-top: 1px solid #EEE;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.menu-footer .version {
+    margin-top: 5px;
+    opacity: 0.6;
+}
+
+/* ===== Menu Overlay ===== */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2500;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===== Info Modals (About, Privacy, etc.) ===== */
+.info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.info-modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.info-modal-content {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
+}
+
+.info-modal-content h2 {
+    margin-bottom: 20px;
+    color: var(--primary-dark);
+    padding-right: 30px;
+}
+
+.info-modal-content h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.info-body {
+    color: var(--text-color);
+    line-height: 1.7;
+}
+
+.info-body p {
+    margin-bottom: 12px;
+}
+
+.info-body ul, .info-body ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.info-body li {
+    margin-bottom: 8px;
+}
+
+.info-body a {
+    color: var(--primary-dark);
+}
+
+.info-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: var(--text-light);
+    cursor: pointer;
+    line-height: 1;
+    padding: 5px;
+}
+
+.info-close-btn:hover {
+    color: var(--text-color);
+}
+
 /* ===== Floating Add Button ===== */
 .floating-btn {
     position: fixed;

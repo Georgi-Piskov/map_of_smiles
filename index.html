@@ -33,6 +33,182 @@
     <!-- Map Container -->
     <div id="map"></div>
     
+    <!-- Home Button -->
+    <button id="home-btn" class="home-btn" aria-label="Go to my location">
+        <img src="./icons/icon-72.png" alt="Home" class="home-icon">
+    </button>
+    
+    <!-- Hamburger Menu Button -->
+    <button id="menu-btn" class="menu-btn" aria-label="Open menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+    
+    <!-- Side Menu -->
+    <div id="side-menu" class="side-menu hidden">
+        <div class="menu-header">
+            <img src="./icons/icon-72.png" alt="Logo" class="menu-logo">
+            <span class="menu-title">Map of Smiles</span>
+            <button id="close-menu-btn" class="close-menu-btn" aria-label="Close menu">&times;</button>
+        </div>
+        <nav class="menu-nav">
+            <a href="#" id="menu-about" class="menu-item">
+                <span class="menu-icon">ℹ️</span>
+                <span>About</span>
+            </a>
+            <a href="#" id="menu-privacy" class="menu-item">
+                <span class="menu-icon">🔒</span>
+                <span>Privacy Policy</span>
+            </a>
+            <a href="#" id="menu-howto" class="menu-item">
+                <span class="menu-icon">❓</span>
+                <span>How to Use</span>
+            </a>
+            <a href="#" id="menu-contact" class="menu-item">
+                <span class="menu-icon">✉️</span>
+                <span>Contact</span>
+            </a>
+        </nav>
+        <div class="menu-footer">
+            <p>Made with ❤️ for a happier world</p>
+            <p class="version">v1.0.0</p>
+        </div>
+    </div>
+    
+    <!-- Menu Overlay -->
+    <div id="menu-overlay" class="menu-overlay hidden"></div>
+    
+    <!-- About Modal -->
+    <div id="about-modal" class="info-modal hidden">
+        <div class="info-modal-content">
+            <button class="info-close-btn" data-close="about-modal">&times;</button>
+            <h2>About Map of Smiles</h2>
+            <div class="info-body">
+                <p><strong>Map of Smiles</strong> is a platform where people share positive, heartwarming stories connected to real places around the world.</p>
+                <p>Ever walked by a park bench and wondered what special moments happened there? Now you can find out — and share your own!</p>
+                <h3>🎯 Our Mission</h3>
+                <p>To create a world where every place has a story, and every story brings a smile. We believe that sharing positive moments can make the world a little brighter.</p>
+                <h3>💡 How It Works</h3>
+                <ul>
+                    <li>📍 Tap anywhere on the map to add your story</li>
+                    <li>😊 Choose an emotion that matches your memory</li>
+                    <li>✍️ Write your anonymous story (max 500 characters)</li>
+                    <li>🌍 Explore stories from others around you</li>
+                </ul>
+                <h3>🔒 Privacy First</h3>
+                <p>All stories are <strong>completely anonymous</strong>. We don't collect personal data, require sign-ups, or track you outside the app.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="info-modal hidden">
+        <div class="info-modal-content">
+            <button class="info-close-btn" data-close="privacy-modal">&times;</button>
+            <h2>Privacy Policy</h2>
+            <div class="info-body">
+                <p><em>Last updated: November 2025</em></p>
+                
+                <h3>1. Information We Collect</h3>
+                <p><strong>Location Data:</strong> When you use Map of Smiles, we access your device's location only while the app is active and only with your explicit permission. This is used solely to show nearby stories and to place your stories on the map.</p>
+                <p><strong>Story Content:</strong> When you submit a story, we store the text, selected emotion, and geographic coordinates. We do NOT store any personally identifiable information.</p>
+                
+                <h3>2. Information We Do NOT Collect</h3>
+                <ul>
+                    <li>❌ Names, emails, or any personal identifiers</li>
+                    <li>❌ IP addresses</li>
+                    <li>❌ Device identifiers</li>
+                    <li>❌ Browsing history</li>
+                    <li>❌ Background location tracking</li>
+                </ul>
+                
+                <h3>3. How We Use Your Data</h3>
+                <p>Your stories are displayed anonymously on the public map for other users to read and enjoy. We may use AI-powered moderation to filter inappropriate content before it's published.</p>
+                
+                <h3>4. Data Storage</h3>
+                <p>Stories are stored securely using Supabase (PostgreSQL database) with industry-standard encryption. We do not sell or share your data with third parties.</p>
+                
+                <h3>5. Your Rights</h3>
+                <p>Since we don't collect personal data, there's nothing to delete or export. Stories are anonymous and cannot be traced back to you.</p>
+                
+                <h3>6. Third-Party Services</h3>
+                <ul>
+                    <li><strong>OpenStreetMap:</strong> Map tiles (subject to their privacy policy)</li>
+                    <li><strong>Supabase:</strong> Database hosting</li>
+                    <li><strong>GitHub Pages:</strong> Website hosting</li>
+                </ul>
+                
+                <h3>7. Children's Privacy</h3>
+                <p>Map of Smiles is intended for users of all ages. We do not knowingly collect any personal information from anyone, including children.</p>
+                
+                <h3>8. Changes to This Policy</h3>
+                <p>We may update this policy from time to time. Changes will be posted on this page with an updated date.</p>
+                
+                <h3>9. Contact</h3>
+                <p>Questions about this policy? Contact us through GitHub.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- How To Use Modal -->
+    <div id="howto-modal" class="info-modal hidden">
+        <div class="info-modal-content">
+            <button class="info-close-btn" data-close="howto-modal">&times;</button>
+            <h2>How to Use</h2>
+            <div class="info-body">
+                <h3>📖 Reading Stories</h3>
+                <ol>
+                    <li>Allow location access when prompted</li>
+                    <li>Explore the map — emoji markers show stories</li>
+                    <li>Tap a marker to read the story</li>
+                    <li>Use "View Location" to see the place in Street View</li>
+                    <li>Filter stories by emotion using the top bar</li>
+                </ol>
+                
+                <h3>✍️ Sharing Your Story</h3>
+                <ol>
+                    <li>Tap anywhere on the map where your story happened</li>
+                    <li>Click "Add Story Here" in the popup</li>
+                    <li>Write your positive memory (max 500 characters)</li>
+                    <li>Choose an emotion that fits</li>
+                    <li>Tap "Share Story" — it's anonymous!</li>
+                </ol>
+                
+                <h3>💡 Tips</h3>
+                <ul>
+                    <li>Stories work best when they're specific to a place</li>
+                    <li>Keep it positive and uplifting</li>
+                    <li>Don't include personal information</li>
+                    <li>Install the app on your phone for the best experience</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="info-modal hidden">
+        <div class="info-modal-content">
+            <button class="info-close-btn" data-close="contact-modal">&times;</button>
+            <h2>Contact Us</h2>
+            <div class="info-body">
+                <p>We'd love to hear from you!</p>
+                
+                <h3>🐛 Report a Bug</h3>
+                <p>Found something that doesn't work? Open an issue on our <a href="https://github.com/Georgi-Piskov/map_of_smiles/issues" target="_blank">GitHub repository</a>.</p>
+                
+                <h3>💡 Suggest a Feature</h3>
+                <p>Have an idea to make Map of Smiles better? We're all ears! Create a feature request on <a href="https://github.com/Georgi-Piskov/map_of_smiles/issues" target="_blank">GitHub</a>.</p>
+                
+                <h3>⚠️ Report Inappropriate Content</h3>
+                <p>See a story that violates our community guidelines? Please report it through GitHub issues with the story location.</p>
+                
+                <h3>📧 General Inquiries</h3>
+                <p>For other questions, reach out through GitHub discussions.</p>
+            </div>
+        </div>
+    </div>
+    
     <!-- Emotion Filter -->
     <div id="emotion-filter" class="emotion-filter">
         <button class="filter-btn active" data-filter="all">🌟 All</button>

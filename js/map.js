@@ -326,6 +326,13 @@ const MapModule = (function() {
     }
     
     /**
+     * Get actual user GPS position only
+     */
+    function getMyPosition() {
+        return userPosition;
+    }
+    
+    /**
      * Get selected position (from map click)
      */
     function getSelectedPosition() {
@@ -346,6 +353,7 @@ const MapModule = (function() {
         clearMarkers,
         hasMarker,
         getUserPosition,
+        getMyPosition,
         getSelectedPosition,
         clearSelection,
         getMap

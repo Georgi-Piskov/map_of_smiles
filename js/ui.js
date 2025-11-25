@@ -29,7 +29,24 @@ const UI = (function() {
             statusText: document.getElementById('status-text'),
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toast-message'),
-            filterBtns: document.querySelectorAll('.filter-btn')
+            filterBtns: document.querySelectorAll('.filter-btn'),
+            // Menu elements
+            homeBtn: document.getElementById('home-btn'),
+            menuBtn: document.getElementById('menu-btn'),
+            sideMenu: document.getElementById('side-menu'),
+            closeMenuBtn: document.getElementById('close-menu-btn'),
+            menuOverlay: document.getElementById('menu-overlay'),
+            // Menu items
+            menuAbout: document.getElementById('menu-about'),
+            menuPrivacy: document.getElementById('menu-privacy'),
+            menuHowto: document.getElementById('menu-howto'),
+            menuContact: document.getElementById('menu-contact'),
+            // Info modals
+            aboutModal: document.getElementById('about-modal'),
+            privacyModal: document.getElementById('privacy-modal'),
+            howtoModal: document.getElementById('howto-modal'),
+            contactModal: document.getElementById('contact-modal'),
+            infoCloseBtns: document.querySelectorAll('.info-close-btn')
         };
         
         // Bind events
@@ -67,14 +84,131 @@ const UI = (function() {
         
         // Escape key to close modal
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !elements.modal.classList.contains('hidden')) {
-                closeModal();
+            if (e.key === 'Escape') {
+                if (!elements.modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+                closeSideMenu();
+                closeAllInfoModals();
             }
         });
         
         // Filter buttons
         elements.filterBtns.forEach(btn => {
             btn.addEventListener('click', () => handleFilterClick(btn));
+        });
+        
+        // Home button
+        elements.homeBtn.addEventListener('click', goToMyLocation);
+        
+        // Menu button
+        elements.menuBtn.addEventListener('click', openSideMenu);
+        elements.closeMenuBtn.addEventListener('click', closeSideMenu);
+        elements.menuOverlay.addEventListener('click', closeSideMenu);
+        
+        // Menu items
+        elements.menuAbout.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSideMenu();
+            openInfoModal('about-modal');
+        });
+        elements.menuPrivacy.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSideMenu();
+            openInfoModal('privacy-modal');
+        });
+        elements.menuHowto.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSideMenu();
+            openInfoModal('howto-modal');
+        });
+        elements.menuContact.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSideMenu();
+            openInfoModal('contact-modal');
+        });
+        
+        // Info modal close buttons
+        elements.infoCloseBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modalId = btn.dataset.close;
+                closeInfoModal(modalId);
+            });
+        });
+        
+        // Close info modals on overlay click
+        [elements.aboutModal, elements.privacyModal, elements.howtoModal, elements.contactModal].forEach(modal => {
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    }
+    
+    /**
+     * Go to user's current location
+     */
+    function goToMyLocation() {
+        const position = MapModule.getMyPosition();
+        const map = MapModule.getMap();
+        
+        if (position && map) {
+            map.setView([position.lat, position.lng], 15);
+            showToast('📍 Moved to your location', 'success');
+        } else {
+            showToast('Location not available', 'error');
+        }
+    }
+    
+    /**
+     * Open side menu
+     */
+    function openSideMenu() {
+        elements.sideMenu.classList.remove('hidden');
+        elements.menuOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    /**
+     * Close side menu
+     */
+    function closeSideMenu() {
+        elements.sideMenu.classList.add('hidden');
+        elements.menuOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    
+    /**
+     * Open info modal by ID
+     */
+    function openInfoModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    /**
+     * Close info modal by ID
+     */
+    function closeInfoModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    /**
+     * Close all info modals
+     */
+    function closeAllInfoModals() {
+        ['about-modal', 'privacy-modal', 'howto-modal', 'contact-modal'].forEach(id => {
+            closeInfoModal(id);
         });
     }
     
