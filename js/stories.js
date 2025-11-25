@@ -59,17 +59,30 @@ const StoriesModule = (function() {
             const stories = await response.json();
             
             // Store all stories for filtering
+            let newStoriesCount = 0;
             stories.forEach(story => {
                 if (!loadedStoryIds.has(story.id)) {
                     allLoadedStories.push(story);
                     loadedStoryIds.add(story.id);
+                    newStoriesCount++;
                 }
             });
             
-            // Add markers based on current filter
-            displayFilteredStories();
+            // Only redraw markers if there are new stories AND no popup is open
+            if (newStoriesCount > 0 && !document.querySelector('.leaflet-popup')) {
+                displayFilteredStories();
+            } else if (newStoriesCount > 0) {
+                // Just add new markers without clearing existing ones
+                stories.forEach(story => {
+                    if (!MapModule.hasMarker(story.id)) {
+                        if (currentFilter === 'all' || story.emotion === currentFilter) {
+                            MapModule.addStoryMarker(story);
+                        }
+                    }
+                });
+            }
             
-            console.log(`Loaded ${stories.length} stories`);
+            console.log(`Loaded ${stories.length} stories, ${newStoriesCount} new`);
             
         } catch (error) {
             console.error('Error loading stories:', error);

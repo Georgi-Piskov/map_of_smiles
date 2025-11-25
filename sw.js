@@ -2,7 +2,7 @@
  * Service Worker for Map of Smiles PWA
  */
 
-const CACHE_NAME = 'map-of-smiles-v8';
+const CACHE_NAME = 'map-of-smiles-v9';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
