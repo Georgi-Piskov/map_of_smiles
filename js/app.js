@@ -15,6 +15,9 @@
     function init() {
         console.log('🗺️ Map of Smiles initializing...');
         
+        // Check for WebView first
+        checkWebView();
+        
         // Initialize UI first
         UI.init();
         
@@ -28,6 +31,108 @@
         setupInstallPrompt();
         
         console.log('✅ Map of Smiles ready!');
+    }
+    
+    /**
+     * Check if running in WebView (Facebook, Messenger, Instagram, etc.)
+     */
+    function checkWebView() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // Detect various in-app browsers
+        const isWebView = (
+            // Facebook
+            ua.indexOf('FBAN') > -1 || 
+            ua.indexOf('FBAV') > -1 ||
+            ua.indexOf('FB_IAB') > -1 ||
+            // Messenger
+            ua.indexOf('Messenger') > -1 ||
+            // Instagram
+            ua.indexOf('Instagram') > -1 ||
+            // Twitter
+            ua.indexOf('Twitter') > -1 ||
+            // TikTok
+            ua.indexOf('BytedanceWebview') > -1 ||
+            ua.indexOf('TikTok') > -1 ||
+            // Snapchat
+            ua.indexOf('Snapchat') > -1 ||
+            // LinkedIn
+            ua.indexOf('LinkedInApp') > -1 ||
+            // Line
+            ua.indexOf('Line/') > -1 ||
+            // Viber
+            ua.indexOf('Viber') > -1 ||
+            // Generic WebView detection
+            ua.indexOf('wv') > -1 ||
+            // iOS WebView
+            (ua.indexOf('iPhone') > -1 && ua.indexOf('Safari') === -1 && ua.indexOf('CriOS') === -1)
+        );
+        
+        if (isWebView) {
+            console.log('⚠️ WebView detected:', ua);
+            showWebViewBanner();
+        } else {
+            console.log('✅ Running in regular browser');
+        }
+    }
+    
+    /**
+     * Show WebView warning banner
+     */
+    function showWebViewBanner() {
+        const banner = document.getElementById('webview-banner');
+        const openBtn = document.getElementById('webview-open');
+        const dismissBtn = document.getElementById('webview-dismiss');
+        
+        if (!banner) return;
+        
+        // Check if user dismissed recently (1 hour)
+        const dismissedTime = localStorage.getItem('webviewDismissed');
+        if (dismissedTime) {
+            const hoursSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60);
+            if (hoursSinceDismissed < 1) {
+                return;
+            }
+        }
+        
+        banner.classList.remove('hidden');
+        
+        // Open in browser button
+        openBtn.addEventListener('click', () => {
+            const url = window.location.href;
+            
+            // Try different methods to open in external browser
+            // Method 1: intent for Android
+            if (/android/i.test(navigator.userAgent)) {
+                window.location.href = 'intent://' + url.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                // Fallback after short delay
+                setTimeout(() => {
+                    window.open(url, '_system');
+                }, 500);
+            } 
+            // Method 2: For iOS, just copy URL and show instructions
+            else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // Try to copy URL to clipboard
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Линкът е копиран! Отвори Safari и го постави там.');
+                    });
+                } else {
+                    // Fallback: show URL
+                    prompt('Копирай този линк и го отвори в Safari:', url);
+                }
+            }
+            // Method 3: Generic
+            else {
+                window.open(url, '_blank');
+            }
+        });
+        
+        // Dismiss button
+        dismissBtn.addEventListener('click', () => {
+            banner.classList.add('hidden');
+            localStorage.setItem('webviewDismissed', Date.now().toString());
+        });
     }
     
     /**
