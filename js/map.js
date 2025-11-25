@@ -46,8 +46,17 @@ const MapModule = (function() {
         });
         map.addLayer(markerClusterGroup);
         
-        // Click on map to select location for story
-        map.on('click', onMapClick);
+        // Click on map to select location for story (with delay to allow popup to open first)
+        map.on('click', function(e) {
+            // Small delay to let marker click events fire first
+            setTimeout(() => {
+                // Don't trigger if a popup is open
+                if (document.querySelector('.leaflet-popup')) {
+                    return;
+                }
+                onMapClick(e);
+            }, 100);
+        });
         
         // Start watching user location
         startLocationWatch();
@@ -62,6 +71,18 @@ const MapModule = (function() {
      * Handle click on map - select location for new story
      */
     function onMapClick(e) {
+        // Ignore clicks on markers or popups
+        if (e.originalEvent && e.originalEvent.target) {
+            const target = e.originalEvent.target;
+            // Check if click was on a marker, popup, or cluster
+            if (target.closest('.story-marker-pin') || 
+                target.closest('.leaflet-popup') || 
+                target.closest('.marker-cluster') ||
+                target.closest('.leaflet-marker-icon')) {
+                return;
+            }
+        }
+        
         const { lat, lng } = e.latlng;
         
         // Set selected position
@@ -215,7 +236,12 @@ const MapModule = (function() {
         const icon = createStoryIcon(story.emotion);
         
         const marker = L.marker([story.lat, story.lng], { icon })
-            .bindPopup(createPopupContent(story));
+            .bindPopup(createPopupContent(story), {
+                closeOnClick: false,
+                autoClose: false,
+                maxWidth: 280,
+                minWidth: 200
+            });
         
         // Add to cluster group instead of directly to map
         markerClusterGroup.addLayer(marker);
